@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "c43func.h": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "stdlib.h": "c"
+    }
+}

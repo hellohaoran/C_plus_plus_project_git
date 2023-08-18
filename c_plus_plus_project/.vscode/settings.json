@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "test.h": "c",
+        "types.h": "c",
+        "c43func.h": "c",
+        "ipc.h": "c",
+        "string.h": "c",
+        "sem.h": "c",
+        "strings.h": "c",
+        "msg.h": "c",
+        "signal.h": "c",
+        "fcntl.h": "c",
+        "pthread.h": "c",
+        "worker.h": "c",
+        "head.h": "c",
+        "sendfile.h": "c"
+    }
+}

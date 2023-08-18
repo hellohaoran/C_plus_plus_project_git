@@ -1,0 +1,40 @@
+#include <c43func.h>
+#include "head.h"
+int sendFile(int netFd)
+{
+    int Fd = open("file1", O_RDWR);
+    
+    // 发给对方文件名
+    train_t train;
+    train.len = 5;
+    strcpy(train.buf, "file1");
+    int ret = send(netFd, &train, sizeof(train.len) + train.len, 0);
+    struct stat statbuf;
+    ret = fstat(Fd , &statbuf);
+    ERROR_CHECK(ret , -1, "fstat");
+    // 用4字節表示文件的大小
+    train.len = 4; 
+    int filelen = statbuf.st_size;
+    memcpy(train.buf, &filelen, sizeof(int));
+    send(netFd, &train,sizeof(train.len)+train.len, 0) ;
+    char *p = (char *)mmap(NULL, statbuf.st_size , PROT_READ|PROT_WRITE, MAP_SHARED,Fd, 0) ; // 
+    ERROR_CHECK(p , MAP_FAILED, "mmap"); 
+    int total = 0 ;
+    while(total <filelen){
+        if(filelen - total < sizeof(train.buf)){
+            // 内容不足1000字节
+            train.len = filelen - total;
+        }else{
+            train.len = sizeof(train.buf) ;
+        }
+        memcpy(train.buf , p+total , train.len) ; // 直接从磁盘文件对应的内存中取出数据
+        total += train.len ;
+        send(netFd, &train, train.len+ sizeof(train.len),MSG_NOSIGNAL);
+    }
+    train.len = 0 ;
+    ret = send(netFd, &train, sizeof(train.len)+train.len,MSG_NOSIGNAL);
+   
+    close(Fd);
+
+
+}
